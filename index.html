@@ -307,19 +307,25 @@
             
             <div class="editor-toolbar">
                 <button class="toolbar-btn" onclick="formatText('bold')" title="굵게">
-                    <strong>B</strong> 굵게
+                    <strong>B</strong>
                 </button>
                 <button class="toolbar-btn" onclick="formatText('italic')" title="기울임">
-                    <em>I</em> 기울임
+                    <em>I</em>
                 </button>
-                <button class="toolbar-btn" onclick="insertLineBreak()" title="줄바꿈">
-                    ↵ 줄바꿈
+                <button class="toolbar-btn" onclick="formatText('strikethrough')" title="취소선">
+                    <s>S</s>
                 </button>
-                <button class="toolbar-btn" onclick="insertParagraph()" title="새 문단">
-                    ¶ 새 문단
+                <button class="toolbar-btn" onclick="insertLink()" title="링크">
+                    🔗
                 </button>
-                <button class="toolbar-btn" onclick="clearEditor()" title="모두 지우기">
-                    🗑️ 모두 지우기
+                <button class="toolbar-btn" onclick="insertBulletList()" title="글머리 기호">
+                    • 목록
+                </button>
+                <button class="toolbar-btn" onclick="insertNumberList()" title="번호 목록">
+                    1. 목록
+                </button>
+                <button class="toolbar-btn" onclick="insertQuote()" title="인용구">
+                    " 인용
                 </button>
             </div>
             
@@ -369,30 +375,45 @@
     <script>
         // 템플릿 데이터
         const templates = {
-            review: `<p><strong>솔직하고 건설적으로 리뷰를 작성해 주세요.</strong></p>
-<p>평가하는 것이 아닌, 성장에 도움이 되는 내용을 작성해 주시면 좋습니다.</p>
-<p>구체적인 예시와 개선 방안을 포함해 주세요.</p>`,
+            review: `<p><strong>📋 리뷰 작성 가이드라인</strong></p>
+<p><strong>솔직하고 건설적으로 리뷰를 작성해 주세요.</strong></p>
+<ul>
+<li>평가보다는 <strong>성장에 도움이 되는 내용</strong>으로 작성</li>
+<li>구체적인 예시와 개선 방안 포함</li>
+<li>긍정적인 피드백과 개선점을 균형있게 제시</li>
+</ul>
+<blockquote style="border-left: 4px solid #ddd; margin: 16px 0; padding: 8px 16px; background-color: #f9f9f9; font-style: italic;">여러분의 소중한 의견이 더 나은 서비스를 만듭니다.</blockquote>`,
             
             notice: `<p><strong>📢 중요 공지사항</strong></p>
 <p>안녕하세요. 다음 사항을 안내드립니다.</p>
-<p><strong>주요 내용:</strong></p>
-<p>• 첫 번째 항목</p>
-<p>• 두 번째 항목</p>
-<p>문의사항이 있으시면 언제든 연락주세요.</p>`,
+<p><strong>주요 변경사항:</strong></p>
+<ol>
+<li><strong>첫 번째 중요 사항</strong></li>
+<li><strong>두 번째 중요 사항</strong></li>
+<li><strong>세 번째 중요 사항</strong></li>
+</ol>
+<blockquote style="border-left: 4px solid #e74c3c; margin: 16px 0; padding: 8px 16px; background-color: #fff3cd; font-style: italic;"><strong>⚠️ 주의:</strong> 해당 사항은 즉시 적용됩니다.</blockquote>
+<p>문의사항이 있으시면 언제든 <a href="mailto:support@company.com" target="_blank">연락</a>주세요.</p>`,
             
-            guide: `<p><strong>📖 이용 가이드</strong></p>
+            guide: `<p><strong>📖 서비스 이용 가이드</strong></p>
 <p>올바른 사용법을 안내해드립니다.</p>
-<p><strong>1단계:</strong> 첫 번째 과정</p>
-<p><strong>2단계:</strong> 두 번째 과정</p>
-<p><strong>3단계:</strong> 세 번째 과정</p>
-<p>추가 도움이 필요하시면 고객센터로 문의해주세요.</p>`,
+<p><strong>단계별 안내:</strong></p>
+<ol>
+<li><strong>1단계:</strong> 첫 번째 과정 설명</li>
+<li><strong>2단계:</strong> 두 번째 과정 설명</li>
+<li><strong>3단계:</strong> 세 번째 과정 설명</li>
+</ol>
+<p>추가 도움이 필요하시면 <a href="tel:1588-0000" target="_blank">고객센터(1588-0000)</a>로 문의해주세요.</p>`,
             
-            warning: `<p><strong>⚠️ 주의사항</strong></p>
-<p>다음 사항을 반드시 확인해주세요.</p>
+            warning: `<p><strong>⚠️ 중요 주의사항</strong></p>
+<blockquote style="border-left: 4px solid #e74c3c; margin: 16px 0; padding: 8px 16px; background-color: #ffebee; font-style: italic;">다음 사항을 <strong>반드시 확인</strong>해주세요.</blockquote>
 <p><strong>필수 확인사항:</strong></p>
-<p>• 중요한 주의사항 1</p>
-<p>• 중요한 주의사항 2</p>
-<p><strong>위반 시 불이익이 있을 수 있습니다.</strong></p>`
+<ul>
+<li><s>잘못된 사용법</s> → <strong>올바른 사용법</strong></li>
+<li><s>금지된 행위</s> → <strong>권장 행위</strong></li>
+<li><s>위험한 활동</s> → <strong>안전한 활동</strong></li>
+</ul>
+<p><strong>위반 시 서비스 이용에 제한이 있을 수 있습니다.</strong></p>`
         };
         
         const editor = document.getElementById('editor');
@@ -426,27 +447,117 @@
             updatePreview();
         }
         
-        // 줄바꿈 삽입
-        function insertLineBreak() {
-            document.execCommand('insertHTML', false, '<br>');
-            editor.focus();
-            updatePreview();
-        }
-        
-        // 새 문단 삽입
-        function insertParagraph() {
-            document.execCommand('insertHTML', false, '<p><br></p>');
-            editor.focus();
-            updatePreview();
-        }
-        
-        // 에디터 내용 지우기
-        function clearEditor() {
-            if (confirm('모든 내용을 지우시겠습니까?')) {
-                editor.innerHTML = '';
-                updatePreview();
+        // 링크 삽입
+        function insertLink() {
+            const selection = window.getSelection();
+            const selectedText = selection.toString().trim();
+            
+            if (selectedText) {
+                // 선택된 텍스트가 있는 경우
+                let url = selectedText;
+                
+                // URL이 http로 시작하지 않으면 추가
+                if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                    url = 'https://' + url;
+                }
+                
+                // 사용자에게 URL 확인/수정 기회 제공
+                const finalUrl = prompt('링크 URL을 확인하거나 수정하세요:', url);
+                
+                if (finalUrl && finalUrl.trim() !== '') {
+                    // 선택된 텍스트를 링크로 변환
+                    const range = selection.getRangeAt(0);
+                    const linkElement = document.createElement('a');
+                    linkElement.href = finalUrl;
+                    linkElement.target = '_blank';
+                    linkElement.textContent = selectedText;
+                    
+                    range.deleteContents();
+                    range.insertNode(linkElement);
+                    
+                    // 선택 해제
+                    selection.removeAllRanges();
+                    
+                    editor.focus();
+                    updatePreview();
+                }
+            } else {
+                // 선택된 텍스트가 없는 경우
+                const url = prompt('링크 URL을 입력하세요:', 'https://');
+                if (url && url.trim() !== '' && url !== 'https://') {
+                    const linkText = prompt('링크 텍스트를 입력하세요:', '링크');
+                    if (linkText && linkText.trim() !== '') {
+                        document.execCommand('insertHTML', false, `<a href="${url}" target="_blank">${linkText}</a>`);
+                        editor.focus();
+                        updatePreview();
+                    }
+                }
             }
         }
+        
+        // 글머리 기호 목록
+        function insertBulletList() {
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                const selectedText = selection.toString();
+                if (selectedText) {
+                    // 선택된 텍스트가 있으면 각 줄을 목록으로 변환
+                    const lines = selectedText.split('\n').filter(line => line.trim());
+                    const listItems = lines.map(line => `<li>${line.trim()}</li>`).join('');
+                    const listHTML = `<ul>${listItems}</ul>`;
+                    document.execCommand('insertHTML', false, listHTML);
+                } else {
+                    // 선택된 텍스트가 없으면 빈 목록 삽입
+                    document.execCommand('insertHTML', false, '<ul><li>목록 항목</li></ul>');
+                }
+            } else {
+                document.execCommand('insertHTML', false, '<ul><li>목록 항목</li></ul>');
+            }
+            editor.focus();
+            updatePreview();
+        }
+        
+        // 번호 목록
+        function insertNumberList() {
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                const selectedText = selection.toString();
+                if (selectedText) {
+                    // 선택된 텍스트가 있으면 각 줄을 목록으로 변환
+                    const lines = selectedText.split('\n').filter(line => line.trim());
+                    const listItems = lines.map(line => `<li>${line.trim()}</li>`).join('');
+                    const listHTML = `<ol>${listItems}</ol>`;
+                    document.execCommand('insertHTML', false, listHTML);
+                } else {
+                    // 선택된 텍스트가 없으면 빈 목록 삽입
+                    document.execCommand('insertHTML', false, '<ol><li>목록 항목</li></ol>');
+                }
+            } else {
+                document.execCommand('insertHTML', false, '<ol><li>목록 항목</li></ol>');
+            }
+            editor.focus();
+            updatePreview();
+        }
+        
+        // 인용구 삽입
+        function insertQuote() {
+            const selection = window.getSelection();
+            const selectedText = selection.toString();
+            
+            if (selectedText) {
+                // 선택된 텍스트를 인용구로 변환
+                const quoteHTML = `<blockquote style="border-left: 4px solid #ddd; margin: 16px 0; padding: 8px 16px; background-color: #f9f9f9; font-style: italic;">${selectedText}</blockquote>`;
+                document.execCommand('insertHTML', false, quoteHTML);
+            } else {
+                // 선택된 텍스트가 없으면 빈 인용구 삽입
+                const quoteHTML = `<blockquote style="border-left: 4px solid #ddd; margin: 16px 0; padding: 8px 16px; background-color: #f9f9f9; font-style: italic;">인용구를 입력하세요</blockquote>`;
+                document.execCommand('insertHTML', false, quoteHTML);
+            }
+            editor.focus();
+            updatePreview();
+        }
+        
+        // 에디터 내용 지우기 함수 제거
         
         // HTML 생성
         function generateHTML() {
@@ -505,13 +616,13 @@
             
             // 에디터 placeholder 효과
             editor.addEventListener('focus', function() {
-                if (this.innerHTML === '안내사항을 작성해주세요.') {
+                if (this.innerHTML === '안내사항을 작성해주세요.' || this.innerHTML.trim() === '') {
                     this.innerHTML = '';
                 }
             });
             
             editor.addEventListener('blur', function() {
-                if (this.innerHTML.trim() === '') {
+                if (this.innerHTML.trim() === '' || this.innerHTML === '<br>' || this.innerHTML === '<p><br></p>') {
                     this.innerHTML = '안내사항을 작성해주세요.';
                     updatePreview();
                 }
